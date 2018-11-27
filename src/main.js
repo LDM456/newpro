@@ -7,11 +7,17 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/css/reset.css'
 import axios from '@/plugins/plugin.js'
+import moment from 'moment'
 // Vue.config.productionTip = false
 
 // 使用vue插件
 Vue.use(ElementUI)
 Vue.use(axios)
+
+// 使用全局过滤器
+Vue.filter('fmdate', (v) => {
+  return moment(v).format('YYYY-MM-DD')
+})
 
 /* eslint-disable no-new */
 new Vue({
