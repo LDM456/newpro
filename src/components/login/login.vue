@@ -6,9 +6,9 @@
             <el-input v-model="formdata.username"></el-input>
         </el-form-item>
         <el-form-item label="密码">
-            <el-input v-model="formdata.password"></el-input>
+            <el-input v-model="formdata.password" type="password"></el-input>
         </el-form-item>
-        <el-button class="login-btn" type="primary">登&nbsp;录</el-button>
+        <el-button @click.prevent="getLogin()" class="login-btn" type="primary">登&nbsp;录</el-button>
     </el-form>
 </div>
 </template>
@@ -20,6 +20,27 @@ export default {
       formdata: {
         username: '',
         password: ''
+      }
+    }
+  },
+  methods: {
+    async getLogin () {
+      const res = await this.$axios.post('login', this.formdata)
+      // console.log(res)
+      const {
+        data,
+        meta: {
+          msg,
+          status
+        }
+      } = res.data
+      if (status === 200) {
+        // 登录成功保存 token到localstorage中
+        localStorage.setItem('token', data.token)
+        this.$router.push({name: 'home'})
+        this.$message.success(msg)
+      } else {
+        this.$message.error(msg)
       }
     }
   }

@@ -6,10 +6,12 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/css/reset.css'
+import axios from '@/plugins/plugin.js'
 // Vue.config.productionTip = false
 
 // 使用vue插件
 Vue.use(ElementUI)
+Vue.use(axios)
 
 /* eslint-disable no-new */
 new Vue({
