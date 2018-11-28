@@ -40,8 +40,12 @@
             </template>
         </el-table-column>
         <el-table-column label="状态">
-            <template slot-scope="mg_state">
-                <el-switch v-model="mg_state.row.mg_state" active-color="#13ce66" inactive-color="#ff4949">
+            <template slot-scope="scope">
+                <el-switch
+                @change="changeState(scope.row)"
+                v-model="scope.row.mg_state"
+                active-color="#13ce66"
+                inactive-color="#ff4949">
                 </el-switch>
             </template>
         </el-table-column>
@@ -81,15 +85,15 @@
     </el-dialog>
     <!-- 修改用户的 弹出层 -->
     <el-dialog title="修改用户信息" :visible.sync="dialogFormVisibleEdit" :width='width'>
-        <el-form v-model="editform">
+        <el-form v-model="form">
             <el-form-item label="用户名" label-width='70px'>
-                <el-input v-model="editform.username" autocomplete="off" disabled></el-input>
+                <el-input v-model="form.username" autocomplete="off" disabled></el-input>
             </el-form-item>
             <el-form-item label="邮箱" label-width='70px'>
-                <el-input v-model="editform.email" autocomplete="off"></el-input>
+                <el-input v-model="form.email" autocomplete="off"></el-input>
             </el-form-item>
             <el-form-item label="电话" label-width='70px'>
-                <el-input v-model="editform.mobile" autocomplete="off"></el-input>
+                <el-input v-model="form.mobile" autocomplete="off"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -106,6 +110,7 @@ export default {
   data () {
     return {
       query: '',
+      // 表单数据
       tableData: [
         // 表格绑定的数据
         {
@@ -124,8 +129,9 @@ export default {
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,
       width: '40%',
-      form: {},
-      editform: {}
+      // 弹出层的form
+      form: {}
+
     }
   },
   created () {
@@ -150,6 +156,7 @@ export default {
       if (status === 200) {
         // this.$message.success(msg)
         this.tableData = users
+        this.usersID = users.id
         this.total = total
       }
     },
@@ -164,7 +171,7 @@ export default {
     },
     // 4 - 分页功能
     sizeChange (val) {
-      console.log(`每页${val}页`)
+      // console.log(`每页${val}页`)
       this.pagesize = val
       this.pagenum = 1
       this.getUsers()
@@ -224,8 +231,29 @@ export default {
     async editUser (usersID) {
       this.dialogFormVisibleEdit = true
       const res = await this.$axios.get(`users/${usersID}`)
-      this.editform = res.data.data
+      this.form = res.data.data
       console.log(res)
+      console.log(this.form)
+    },
+    // 5.3.1点击修改按钮提交请求
+    async handleEdit () {
+      const res = await this.$axios.put(`users/${this.form.id}`, this.form)
+      const {meta: {status, msg}} = res.data
+      if (status === 200) {
+        this.$message.success(msg)
+        this.getUsers()
+      }
+      this.dialogFormVisibleEdit = false
+    },
+    // 6 改变用户状态
+    async changeState (user) {
+      // console.log(111)
+      const res = await this.$axios.put(`users/${user.id}/state/${user.mg_state}`)
+      // console.log(res)
+      const {meta: {status, msg}} = res.data
+      if (status === 200) {
+        this.$message.success(msg)
+      }
     }
   }
 }
