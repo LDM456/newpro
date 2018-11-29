@@ -41,11 +41,7 @@
         </el-table-column>
         <el-table-column label="状态">
             <template slot-scope="scope">
-                <el-switch
-                @change="changeState(scope.row)"
-                v-model="scope.row.mg_state"
-                active-color="#13ce66"
-                inactive-color="#ff4949">
+                <el-switch @change="changeState(scope.row)" v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949">
                 </el-switch>
             </template>
         </el-table-column>
@@ -54,7 +50,7 @@
                 <el-button @click="editUser(scope.row.id)" :plain='true' :size='size' type="primary" icon="el-icon-edit" circle></el-button>
                 <!-- scope的值就是tableData，其里面包含着userID -->
                 <el-button @click="delUser(scope.row.id)" :plain='true' :size='size' type="danger" icon="el-icon-delete" circle></el-button>
-                <el-button :plain='true' :size='size' type="success" icon="el-icon-check" circle></el-button>
+                <el-button @click="assignRole(scope.row)" :plain='true' :size='size' type="success" icon="el-icon-check" circle></el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -101,6 +97,30 @@
             <el-button type="primary" @click="handleEdit()">确 定</el-button>
         </div>
     </el-dialog>
+    <!-- 分配角色功能 -->
+    <el-dialog title="分配角色" :visible.sync="dialogFormVisibleRole" :width='width'>
+        <el-form v-model="form">
+            <el-form-item label="用户名" label-width='70px'>
+                {{username}}
+            </el-form-item>
+            <el-form-item label="角色" label-width='70px'>
+                <!-- 如果select的绑定的数据的值roleID，和option的value的值item.id一样
+              就会显示该option的值  也就是说显示获取到的用户的角色名称-->
+                <!-- 下拉框显示角色 -->
+                <!-- {{roleID}} -->
+                <el-select v-model="roleID">
+                    <el-option label="请选择" :value="-1" disabled></el-option>
+                    <el-option v-for="(item,i) in rolesList" :key="i" :label="item.roleName" :value="item.id">
+                    </el-option>
+                </el-select>
+
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="dialogFormVisibleRole = false">取 消</el-button>
+            <el-button type="primary" @click="handleRole()">确 定</el-button>
+        </div>
+    </el-dialog>
 
 </el-card>
 </template>
@@ -128,9 +148,20 @@ export default {
       size: 'mini',
       dialogFormVisibleAdd: false,
       dialogFormVisibleEdit: false,
+      dialogFormVisibleRole: false,
       width: '40%',
       // 弹出层的form
-      form: {}
+      form: {},
+      // 用户列表
+      users: [],
+      // 用户名
+      username: '',
+      // 角色列表
+      rolesList: [],
+      // 用户ID
+      usersID: -1,
+      // 角色ID
+      roleID: -1
 
     }
   },
@@ -212,7 +243,11 @@ export default {
         // data中找userID
         // 将ueserID以形参传进来
         const res = await this.$axios.delete(`users/${userID}`)
-        const {meta: {status}} = res.data
+        const {
+          meta: {
+            status
+          }
+        } = res.data
         if (status === 200) {
           this.getUsers()
           this.$message({
@@ -232,13 +267,18 @@ export default {
       this.dialogFormVisibleEdit = true
       const res = await this.$axios.get(`users/${usersID}`)
       this.form = res.data.data
-      console.log(res)
-      console.log(this.form)
+      // console.log(res)
+      // console.log(this.form)
     },
     // 5.3.1点击修改按钮提交请求
     async handleEdit () {
       const res = await this.$axios.put(`users/${this.form.id}`, this.form)
-      const {meta: {status, msg}} = res.data
+      const {
+        meta: {
+          status,
+          msg
+        }
+      } = res.data
       if (status === 200) {
         this.$message.success(msg)
         this.getUsers()
@@ -250,10 +290,42 @@ export default {
       // console.log(111)
       const res = await this.$axios.put(`users/${user.id}/state/${user.mg_state}`)
       // console.log(res)
+      const {
+        meta: {
+          status,
+          msg
+        }
+      } = res.data
+      if (status === 200) {
+        this.$message.success(msg)
+      }
+    },
+    // 7 分配角色按钮功能
+    async assignRole (user) {
+      this.dialogFormVisibleRole = true
+      // 获取点击的用户的用户名和用户ID
+      this.username = user.username
+      this.usersID = user.id
+      // 获取角色列表-获取角色ID
+      const res = await this.$axios.get(`users/${this.usersID}`)
+      /* 如果select的绑定的数据的值roleID，和option的value的值item.id一样
+                    就会显示该option的值  也就是说显示获取到的用户的角色名称- */
+      this.roleID = res.data.data.rid
+      // 获取所有的角色
+      const res1 = await this.$axios.get(`roles`)
+      this.rolesList = res1.data.data
+    },
+    // 7 - 1分配角色确认修改
+    async handleRole () {
+      // users/:id/role
+      // :id 要修改的用户的id值
+      // 请求体中rid修改的新值 {rid：角色id}
+      const res = await this.$axios.put(`users/${this.usersID}/role`, {rid: this.roleID})
       const {meta: {status, msg}} = res.data
       if (status === 200) {
         this.$message.success(msg)
       }
+      this.dialogFormVisibleRole = false
     }
   }
 }
