@@ -1,11 +1,7 @@
 <template>
 <el-card class="box-card">
-    <!-- 导航 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
-        <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-        <el-breadcrumb-item>用户列表</el-breadcrumb-item>
-    </el-breadcrumb>
+    <!-- 导航 面包屑-->
+    <my-bread level1="用户管理" level2="用户列表"></my-bread>
     <!--搜索框  是标签在一行上显示 使用el-row -->
     <el-row class="elRow">
         <el-col>
