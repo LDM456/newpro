@@ -1,5 +1,5 @@
 <template>
-<el-card class="box-card">
+<el-card id="box-card">
     <!-- 导航 面包屑-->
     <my-bread level1="用户管理" level2="用户列表"></my-bread>
     <!--搜索框  是标签在一行上显示 使用el-row -->
@@ -167,10 +167,8 @@ export default {
   methods: {
     //   1 - 获取用户列表
     async getUsers () {
-      const AUTH_TOKEN = localStorage.getItem('token')
-      this.$axios.defaults.headers.common['Authorization'] = AUTH_TOKEN
       const res = await this.$axios.get(`users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`)
-      console.log(res)
+      // console.log(res)
       const {
         meta: {
           status
@@ -277,7 +275,7 @@ export default {
       } = res.data
       if (status === 200) {
         this.$message.success(msg)
-        this.getUsers()
+        // this.getUsers()
       }
       this.dialogFormVisibleEdit = false
     },
@@ -328,9 +326,9 @@ export default {
 </script>
 
 <style>
-.box-card {
-    height: 100%;
-    /* overflow: auto; */
+#box-card {
+    height: 99%;
+    overflow: auto;
 }
 
 .inputText {
