@@ -5,6 +5,7 @@ const MyHttpServer = {}
 
 MyHttpServer.install = (Vue) => {
   axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
+
   // 添加请求拦截器
   axios.interceptors.request.use(function (config) {
     // console.log('拦截器被触发')

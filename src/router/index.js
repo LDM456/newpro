@@ -3,8 +3,8 @@ import Router from 'vue-router'
 import Login from '@/components/login/login.vue'
 import Home from '@/components/home/home.vue'
 import Users from '../components/users/users.vue'
-import roles from '../components/role/userRole.vue'
-import rights from '../components/role/roleList.vue'
+import roles from '../components/role/roleList.vue'
+import rights from '../components/role/rights.vue'
 import { Message } from 'element-ui'
 Vue.use(Router)
 
@@ -23,9 +23,11 @@ const router = new Router({
 
   ]
 })
+
+// 路由导航
 router.beforeEach((to, from, next) => {
-  // console.log(to)
-  // console.log(from)
+  // console.log(to) 去哪
+  // console.log(from) 从哪来
   if (to.path === '/login') {
     next()
   } else {
