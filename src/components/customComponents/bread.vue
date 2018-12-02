@@ -19,7 +19,7 @@ export default {
   // props 中的值的用法和data数据中的用法一样
   // props 中的数据 来源于 使用组件时传的值
   // props 中的数据也是该组件的属性 <child-a :msg="as">
-  props: ['level1', 'level2']
+  props: ['level1', 'level2', 'level3']
 }
 </script>
 
